@@ -1,29 +1,25 @@
-from fastapi import FastAPI
+import asyncio
 from graph import graph
-from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
-
-class Query(BaseModel):
-    message: str
-
-app = FastAPI()
-
-@app.post("/")
-async def invoke_agent(query: Query):
-    async def agent_stream(query: Query = query):
-        async for chunk, _ in graph.astream(
-            {"messages": [{"role": "user", "content": query.message}]},
-            {"configurable": {"thread_id": "1"}},
-            stream_mode="messages",
-        ):
-            if chunk.content:
-                yield chunk.content
-
-    return StreamingResponse(agent_stream(), media_type="text/plain")
-
+async def test_agent():
+    """Simple test of the LangGraph agent"""
+    print("Testing LangGraph agent...")
+    
+    # Test message
+    test_message = "Hello! What's the weather like in New York?"
+    print(f"Input: {test_message}")
+    print("Response: ", end="")
+    
+    # Stream response from agent
+    async for chunk, _ in graph.astream(
+        {"messages": [{"role": "user", "content": test_message}]},
+        {"configurable": {"thread_id": "test_session"}},
+        stream_mode="messages",
+    ):
+        if chunk.content:
+            print(chunk.content, end="", flush=True)
+    
+    print("\n")
 
 if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
-
+    asyncio.run(test_agent())

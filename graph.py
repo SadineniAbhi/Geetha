@@ -29,11 +29,18 @@ async def ragnode(state: State):
     return {"content_from_rag": "Abhijeeth is an btech student who studying gokaraju rangaraju institute of technoloy and getting his major in ai/ml he also expert in data engineering."}
 
 async def chatbot(state: State):
+    # Include RAG content in the system message
+    rag_content = state.get("content_from_rag", "")
+    system_content = "you are a helpful assistant that helps the user."
+    
+    if rag_content:
+        system_content += f"\n\nRelevant context: {rag_content}"
+    
     system_message = {
         "role": "system",
-        "content": "you are a helpful assistant that helps the user.",
+        "content": system_content,
     }
-    return {"messages": [await llm_with_tools.ainvoke([system_message, state["content_from_rag"]] + state["messages"])]}
+    return {"messages": [await llm_with_tools.ainvoke([system_message] + state["messages"])]}
 
 graph_builder.add_node("chatbot", chatbot)
 graph_builder.add_node("rag_node", ragnode)
