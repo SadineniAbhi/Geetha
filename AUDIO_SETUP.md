@@ -1,9 +1,10 @@
 # Audio Agent Setup & Usage
 
-This project includes audio input functionality:
+This project includes complete audio conversation functionality:
 - **Speech-to-Text**: Captures speech from your microphone and transcribes it using Deepgram
-- **LangGraph Processing**: Feeds transcribed text to your LangGraph agent
-- **Text Response**: Agent responds with text output (TTS removed for simplicity)
+- **LangGraph Processing**: Feeds transcribed text to your LangGraph agent  
+- **Text-to-Speech**: Converts agent responses back to speech using Deepgram TTS
+- **Audio Playback**: Plays the synthesized speech through your speakers
 
 ## 🚀 Quick Setup
 
@@ -51,9 +52,10 @@ python audio_agent.py
 
 This will:
 1. Record audio from your microphone (default 5 seconds)
-2. Transcribe the audio using Deepgram
+2. Transcribe the audio using Deepgram STT
 3. Send the transcribed text to your LangGraph agent
-4. Display the agent's response
+4. Convert the agent's response to speech using Deepgram TTS
+5. Play the spoken response through your speakers
 
 ### Option 2: Test Basic Agent
 ```bash
@@ -81,15 +83,18 @@ This will:
 1. **Audio Capture**: Uses PyAudio to record from your microphone
 2. **Speech-to-Text**: Deepgram converts speech to text using Nova-2 model
 3. **Agent Processing**: LangGraph agent processes the transcribed text
-4. **Text Response**: Agent displays response as text
+4. **Text-to-Speech**: Deepgram converts agent response to speech using Aura model
+5. **Audio Playback**: PyAudio plays the synthesized speech
 
-**Voice-to-Text Flow**: You speak → Agent hears → Agent thinks → Agent responds with text!
+**Complete Voice-to-Voice Flow**: You speak → Agent hears → Agent thinks → Agent speaks back!
 
 ## 🔧 Customization
 
-### Recording Duration
+### Commands
 When running `audio_agent.py`, you can:
-- Press Enter for default 5-second recording
+- Press Enter for voice conversation with TTS enabled
+- Type "text" to disable TTS (text-only responses)
+- Type "speech" to re-enable TTS (voice responses)
 - Type a number (e.g., "10") to set recording duration
 - Type "quit" to exit
 
@@ -102,7 +107,7 @@ self.record_seconds = 5  # Default duration
 ```
 
 ### Transcription Options
-Modify the Deepgram options:
+Modify the Deepgram STT options:
 ```python
 options = PrerecordedOptions(
     model="nova-2",      # Use Nova-2 model
@@ -110,6 +115,37 @@ options = PrerecordedOptions(
     language="en"        # English language
 )
 ```
+
+### Text-to-Speech Options
+Modify the Deepgram TTS options in the `text_to_speech` method:
+```python
+options = SpeakOptions(
+    model="aura-asteria-en",  # High-quality voice model
+    encoding="linear16",       # Audio format
+    sample_rate=24000         # Supported sample rate for linear16
+)
+```
+
+**Supported Sample Rates for linear16 encoding:**
+- 8000 Hz - Telephone quality
+- 16000 Hz - Standard quality
+- 24000 Hz - High quality (recommended)
+- 32000 Hz - Very high quality
+- 48000 Hz - Studio quality
+
+**Available TTS Models:**
+- `aura-asteria-en` - Female, warm and conversational
+- `aura-luna-en` - Female, smooth and pleasant  
+- `aura-stella-en` - Female, friendly and approachable
+- `aura-athena-en` - Female, confident and articulate
+- `aura-hera-en` - Female, sophisticated and polished
+- `aura-orion-en` - Male, deep and authoritative
+- `aura-arcas-en` - Male, natural and engaging
+- `aura-perseus-en` - Male, assertive and clear
+- `aura-angus-en` - Male, gruff and strong
+- `aura-orpheus-en` - Male, confident and smooth
+- `aura-helios-en` - Male, upbeat and energetic
+- `aura-zeus-en` - Male, powerful and commanding
 
 
 
@@ -141,14 +177,17 @@ $ python audio_agent.py
 🎤 Audio Agent initialized!
 Features:
 - Speech-to-Text: Converts your voice to text
-- LangGraph Agent: Processes your request and responds with text
+- LangGraph Agent: Processes your request intelligently
+- Text-to-Speech: Converts agent responses to speech
 
 Commands:
-- Press Enter to start recording
+- Press Enter to start recording with TTS
+- Type 'text' to disable TTS (text-only mode)
+- Type 'speech' to enable TTS (default)
 - Type 'quit' to exit
 - Type a number to set recording duration (seconds)
 
-Press Enter to record (or 'quit' to exit): 
+[🔊 TTS ON] Press Enter to record (or command): 
 Recording audio for 5 seconds...
 Speak now!
 Recording finished!
@@ -156,6 +195,10 @@ Transcribing audio...
 Transcribed text: What's the weather like in New York?
 Processing with LangGraph agent...
 It is sunny in New York.
+Converting text to speech...
+Text-to-speech conversion completed!
+Playing audio...
+Audio playback completed!
 ```
 
 ## 🐛 Common Issues
@@ -179,6 +222,14 @@ It is sunny in New York.
    - Verify internet connection
    - Check Deepgram service status
    - Ensure audio quality is good
+
+6. **TTS sample rate error**
+   - Use supported sample rates: 8000, 16000, 24000, 32000, or 48000 Hz
+   - Default is 24000 Hz for good quality
+
+7. **Deepgram SDK deprecation warnings**
+   - Update to latest deepgram-sdk version: `pip install --upgrade deepgram-sdk`
+   - Code has been updated to use current API methods
 
 ## 🧪 Troubleshooting Tools
 
